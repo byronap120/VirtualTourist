@@ -27,6 +27,7 @@ class LocationsMapViewController: UIViewController , MKMapViewDelegate, UIGestur
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        self.navigationController?.setNavigationBarHidden(true, animated: false)
         getPinList()
         addMapAnnotations()
     }
@@ -53,21 +54,26 @@ class LocationsMapViewController: UIViewController , MKMapViewDelegate, UIGestur
         let coordinate = mapView.convert(location, toCoordinateFrom: mapView)
         let annotation = MKPointAnnotation()
         annotation.coordinate = coordinate
-        mapView.addAnnotation(annotation)
+        
         savePin(coordinate: coordinate)
     }
     
     private func addMapAnnotations() {
         var annotations = [CustomPin]()
         for pin in pinList {
-            let coordinate = CLLocationCoordinate2D(latitude: pin.latitude, longitude: pin.longitude)
-            let annotation = CustomPin()
-            annotation.pin = pin
-            annotation.coordinate = coordinate
+            let annotation = createCustomAnotationFrom(pin: pin)
             annotations.append(annotation)
         }
         mapView.removeAnnotations(mapView.annotations)
         mapView.addAnnotations(annotations)
+    }
+    
+    private func createCustomAnotationFrom(pin: Pin) -> CustomPin {
+        let coordinate = CLLocationCoordinate2D(latitude: pin.latitude, longitude: pin.longitude)
+        let annotation = CustomPin()
+        annotation.pin = pin
+        annotation.coordinate = coordinate
+        return annotation
     }
     
     private func getPinList(){
@@ -96,6 +102,7 @@ class LocationsMapViewController: UIViewController , MKMapViewDelegate, UIGestur
         
         do {
             try managedContext.save()
+            mapView.addAnnotation(createCustomAnotationFrom(pin: pin))
         } catch let error as NSError {
             print("Could not save. \(error), \(error.userInfo)")
         }
