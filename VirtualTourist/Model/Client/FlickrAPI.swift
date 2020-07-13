@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import UIKit
 
 class FlickrAPI {
     
@@ -63,6 +64,22 @@ class FlickrAPI {
             }
         }
         task.resume()
+    }
+    
+    
+    class func getImageDataFromUrl(imageUrl: String, completionHandler: @escaping (UIImage) -> Void){
+
+        DispatchQueue.global(qos: .userInitiated).async { () -> Void in
+            if let url = URL(string: imageUrl),
+                let imgData = try? Data(contentsOf: url),
+                let img = UIImage(data: imgData) {
+
+                
+                DispatchQueue.main.async(execute: { () -> Void in
+                    completionHandler(img)
+                })
+            }
+        }
     }
     
 }

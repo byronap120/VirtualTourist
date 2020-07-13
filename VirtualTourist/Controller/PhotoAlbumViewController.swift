@@ -66,6 +66,16 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoViewCell", for: indexPath) as! PhotoCollectionViewCell
         
         cell.progressIndicator.startAnimating()
+        if(arePhotosFromNetwork) {
+            let photoUrl = photosUrlList[indexPath.item].url
+            FlickrAPI.getImageDataFromUrl(imageUrl: photoUrl) { (image: UIImage) in
+                cell.imageView.image = image
+            }
+            cell.progressIndicator.stopAnimating()
+        } else {
+            
+        }
+        
         
         
         return cell
