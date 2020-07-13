@@ -9,7 +9,6 @@
 
 import MapKit
 import UIKit
-import MapKit
 
 class CustomPin: MKPointAnnotation {
     var pin: Pin? = nil
