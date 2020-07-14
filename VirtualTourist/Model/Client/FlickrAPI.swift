@@ -41,8 +41,8 @@ class FlickrAPI {
     }
     
     
-    class func getListOfPhotosUrl(latitude: String, longitude: String, page: String, completionHandler: @escaping ([PhotoUrl], String?) -> Void) {
-        let photosURL = Endpoints.photosSearch(latitude, longitude, page).url
+    class func getListOfPhotosUrl(latitude: String, longitude: String, page: Int, completionHandler: @escaping ([PhotoUrl], String?) -> Void) {
+        let photosURL = Endpoints.photosSearch(latitude, longitude, String(page)).url
         let task = URLSession.shared.dataTask(with: photosURL) { (data, response, error) in
             guard let data = data else {
                 DispatchQueue.main.async {
@@ -67,8 +67,7 @@ class FlickrAPI {
     }
     
     
-    class func getImageDataFromUrl(imageUrl: String, completionHandler: @escaping (UIImage) -> Void){
-
+    class func getImageDataFromUrl(imageUrl: String, completionHandler: @escaping (UIImage, Data) -> Void){
         DispatchQueue.global(qos: .userInitiated).async { () -> Void in
             if let url = URL(string: imageUrl),
                 let imgData = try? Data(contentsOf: url),
@@ -76,7 +75,7 @@ class FlickrAPI {
 
                 
                 DispatchQueue.main.async(execute: { () -> Void in
-                    completionHandler(img)
+                    completionHandler(img, imgData)
                 })
             }
         }

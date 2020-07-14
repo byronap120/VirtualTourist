@@ -8,10 +8,12 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
     private let titleErrorMessage = "Error"
+    private let coreDataErrorMessage = "Core Data error: "
     private var arePhotosFromNetwork = false
     private var photosUrlList: [PhotoUrl] = []
     private var photos: [Photo] = []
@@ -19,28 +21,46 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var collectionView: UICollectionView!
     var pin: Pin!
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        // Do any additional setup after loading the view.
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         updateMapViewLocation()
-        FlickrAPI.getListOfPhotosUrl(latitude: String(pin.latitude), longitude: String(pin.longitude),
-                                     page: "1", completionHandler: photosUrlResponseHandler(photos:error:))
+        getLocalPhotos()
     }
     
-    private func photosUrlResponseHandler(photos: [PhotoUrl], error: String?) {
+    private func getLocalPhotos(){
+        guard let managedContext = getManagedContext() else{
+            return
+        }
+        
+        let fetchRequest: NSFetchRequest<Photo> = Photo.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "pin == %@", pin)
+        do {
+            let photos = try managedContext.fetch(fetchRequest)
+            if photos.isEmpty {
+                getPhotosFromNetwork(page: 0)
+            } else {
+                self.photos = photos
+                self.collectionView.reloadData()
+            }
+        } catch let error as NSError {
+            print(coreDataErrorMessage + error.localizedDescription)
+        }
+    }
+    
+    private func getPhotosFromNetwork(page: Int) {
+        FlickrAPI.getListOfPhotosUrl(latitude: String(pin.latitude), longitude: String(pin.longitude),page: page, completionHandler: photosUrlResponseHandler(photoUrlList:error:))
+    }
+    
+    private func photosUrlResponseHandler(photoUrlList: [PhotoUrl], error: String?) {
         if (error != nil) {
             showAlertMessage(title: titleErrorMessage, message: error!)
             return
         }
-        photosUrlList = photos
-        collectionView.reloadData()
+        photosUrlList = photoUrlList
         arePhotosFromNetwork = true
+        collectionView.reloadData()
     }
     
     private func updateMapViewLocation(){
@@ -57,6 +77,33 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         self.mapView.selectAnnotation(annotation, animated: true)
     }
     
+    private func showIndicatorOnCell(cell: PhotoCollectionViewCell , show: Bool){
+        if(show) {
+            cell.progressIndicator.startAnimating()
+            cell.progressIndicator.isHidden = false
+        } else {
+            cell.progressIndicator.stopAnimating()
+            cell.progressIndicator.isHidden = true
+        }
+    }
+    
+    private func saveNewPhoto(url: String, data: Data){
+        guard let managedContext = getManagedContext() else{
+            return
+        }
+        
+        let photo = Photo(context: managedContext)
+        photo.url = url
+        photo.image = data
+        photo.pin = pin
+        
+        do {
+            try managedContext.save()
+        } catch let error as NSError {
+            print(coreDataErrorMessage + error.localizedDescription)
+        }
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return arePhotosFromNetwork ? photosUrlList.count : photos.count
     }
@@ -65,20 +112,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoViewCell", for: indexPath) as! PhotoCollectionViewCell
         
-        cell.progressIndicator.startAnimating()
-        if(arePhotosFromNetwork) {
+        showIndicatorOnCell(cell: cell, show: true)
+        if(arePhotosFromNetwork) {            
             let photoUrl = photosUrlList[indexPath.item].url
-            FlickrAPI.getImageDataFromUrl(imageUrl: photoUrl) { (image: UIImage) in
+            FlickrAPI.getImageDataFromUrl(imageUrl: photoUrl) { (image: UIImage, imageData: Data) in
                 cell.imageView.image = image
+                self.saveNewPhoto(url: photoUrl, data: imageData)
+                self.showIndicatorOnCell(cell: cell, show: false)
             }
-            cell.progressIndicator.stopAnimating()
         } else {
-            
+            let photo = photos[indexPath.item]
+            cell.imageView.image = UIImage(data: photo.image!)
+            showIndicatorOnCell(cell: cell, show: false)
         }
-        
-        
         
         return cell
     }
+    
+    
     
 }
