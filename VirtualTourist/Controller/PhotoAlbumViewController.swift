@@ -12,13 +12,16 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     
+    @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var collectionView: UICollectionView!
+    
     private let titleErrorMessage = "Error"
     private let coreDataErrorMessage = "Core Data error: "
+    private let alertMessageTitle = "Alert"
+    private let alertMessage = "No Images for this location"
     private var arePhotosFromNetwork = false
     private var photosUrlList: [PhotoUrl] = []
     private var photos: [Photo] = []
-    @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var collectionView: UICollectionView!
     var pin: Pin!
     
     
@@ -58,6 +61,12 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             showAlertMessage(title: titleErrorMessage, message: error!)
             return
         }
+        
+        if(photoUrlList.count == 0) {
+            showAlertMessage(title: alertMessageTitle, message: alertMessage)
+            return
+        }
+        
         photosUrlList = photoUrlList
         arePhotosFromNetwork = true
         collectionView.reloadData()
