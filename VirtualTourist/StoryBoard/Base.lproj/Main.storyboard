@@ -56,7 +56,7 @@
                                 </connections>
                             </mapView>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="2ir-a7-rsK">
-                                <rect key="frame" x="0.0" y="281.5" width="414" height="580.5"/>
+                                <rect key="frame" x="0.0" y="281.5" width="414" height="531.5"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="1" minimumInteritemSpacing="1" id="BRn-VP-3N6">
                                     <size key="itemSize" width="120" height="120"/>
@@ -103,24 +103,30 @@
                                 <rect key="frame" x="0.0" y="812" width="414" height="50"/>
                                 <color key="backgroundColor" systemColor="systemGray6Color" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="50" id="Yj1-hp-cZx"/>
+                                    <constraint firstAttribute="height" constant="50" id="JEj-Ak-AgP"/>
                                 </constraints>
                                 <state key="normal" title="New Collection"/>
+                                <connections>
+                                    <action selector="fetchNewCollection:" destination="kE9-Et-fDR" eventType="touchUpInside" id="Bjy-Nz-D7t"/>
+                                </connections>
                             </button>
                         </subviews>
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
-                            <constraint firstItem="2ir-a7-rsK" firstAttribute="height" secondItem="Ykg-bc-PCI" secondAttribute="height" multiplier="3:4" id="7MW-DG-R2x"/>
+                            <constraint firstItem="2ir-a7-rsK" firstAttribute="trailing" secondItem="Ykg-bc-PCI" secondAttribute="trailing" id="0Qk-zM-9kF"/>
                             <constraint firstItem="VDv-ld-EIW" firstAttribute="height" secondItem="Ykg-bc-PCI" secondAttribute="height" multiplier="1:4" id="8af-YM-4fg"/>
-                            <constraint firstItem="2ir-a7-rsK" firstAttribute="leading" secondItem="Ykg-bc-PCI" secondAttribute="leading" id="FpW-tI-Lh5"/>
+                            <constraint firstItem="NYb-zp-p5o" firstAttribute="bottom" secondItem="Ykg-bc-PCI" secondAttribute="bottom" id="9yV-Lp-d17"/>
+                            <constraint firstItem="NYb-zp-p5o" firstAttribute="leading" secondItem="Ykg-bc-PCI" secondAttribute="leading" id="A8b-m1-5Uq"/>
+                            <constraint firstItem="NYb-zp-p5o" firstAttribute="trailing" secondItem="Ykg-bc-PCI" secondAttribute="trailing" id="B8A-kU-cix"/>
                             <constraint firstItem="VDv-ld-EIW" firstAttribute="leading" secondItem="Ykg-bc-PCI" secondAttribute="leading" id="UZT-sK-AeW"/>
-                            <constraint firstItem="Ykg-bc-PCI" firstAttribute="trailing" secondItem="2ir-a7-rsK" secondAttribute="trailing" id="WLF-06-O8r"/>
+                            <constraint firstItem="2ir-a7-rsK" firstAttribute="top" secondItem="VDv-ld-EIW" secondAttribute="bottom" id="Y3I-My-ujo"/>
+                            <constraint firstItem="2ir-a7-rsK" firstAttribute="leading" secondItem="Ykg-bc-PCI" secondAttribute="leading" id="YWs-Qf-rj2"/>
                             <constraint firstItem="NYb-zp-p5o" firstAttribute="bottom" secondItem="Ykg-bc-PCI" secondAttribute="bottom" id="b7Q-7L-x2s"/>
                             <constraint firstItem="Ykg-bc-PCI" firstAttribute="trailing" secondItem="NYb-zp-p5o" secondAttribute="trailing" id="dW6-c6-Lsx"/>
                             <constraint firstItem="VDv-ld-EIW" firstAttribute="top" secondItem="Ykg-bc-PCI" secondAttribute="top" id="ens-bj-RuP"/>
                             <constraint firstItem="Ykg-bc-PCI" firstAttribute="trailing" secondItem="VDv-ld-EIW" secondAttribute="trailing" id="f0C-Qw-irY"/>
-                            <constraint firstItem="Ykg-bc-PCI" firstAttribute="bottom" secondItem="2ir-a7-rsK" secondAttribute="bottom" id="g6x-pb-lPd"/>
                             <constraint firstItem="NYb-zp-p5o" firstAttribute="leading" secondItem="Ykg-bc-PCI" secondAttribute="leading" id="v9u-zc-FxJ"/>
+                            <constraint firstItem="Ykg-bc-PCI" firstAttribute="bottom" secondItem="2ir-a7-rsK" secondAttribute="bottom" constant="49" id="xiY-CE-vFN"/>
                         </constraints>
                         <viewLayoutGuide key="safeArea" id="Ykg-bc-PCI"/>
                     </view>
@@ -131,6 +137,7 @@
                         <outlet property="collectionView" destination="2ir-a7-rsK" id="ZTI-Dv-ZRo"/>
                         <outlet property="flowLayout" destination="BRn-VP-3N6" id="RMp-HC-gia"/>
                         <outlet property="mapView" destination="VDv-ld-EIW" id="ixh-bp-xU0"/>
+                        <outlet property="newCollectionButton" destination="NYb-zp-p5o" id="03q-2z-z7R"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r33-kM-4RR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

@@ -10,6 +10,7 @@ import Foundation
 
 struct PhotoUrl: Codable {
     let url: String
+    var photo: Photo!
     
     enum CodingKeys: String, CodingKey {
         case url = "url_m"

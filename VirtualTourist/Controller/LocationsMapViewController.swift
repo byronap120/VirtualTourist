@@ -99,6 +99,7 @@ class LocationsMapViewController: UIViewController , MKMapViewDelegate, UIGestur
         let pin = Pin(context: managedContext)
         pin.latitude = coordinate.latitude
         pin.longitude = coordinate.longitude
+        pin.currentPage = 0
         
         do {
             try managedContext.save()

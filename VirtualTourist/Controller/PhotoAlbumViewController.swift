@@ -15,6 +15,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var mapView: MKMapView!
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
+    @IBOutlet weak var newCollectionButton: UIButton!
     
     private let titleErrorMessage = "Error"
     private let coreDataErrorMessage = "Core Data error: "
@@ -27,6 +28,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     private var arePhotosFromNetwork = false
     private var photosUrlList: [PhotoUrl] = []
     private var photos: [Photo] = []
+    private var imagesDownloaded = 0
     var pin: Pin!
     
     
@@ -36,6 +38,26 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         updateFlowLayoutDimensions(size: view.frame.size, numberOfCells: numberOfCellsPortrait)
         updateMapViewLocation()
         getLocalPhotos()
+    }
+    
+    @IBAction func fetchNewCollection(_ sender: Any) {
+        removePhotosForPin()
+        let newPage = pin.currentPage +  1
+        getPhotosFromNetwork(page: Int(newPage))
+    }
+    
+    private func removePhotosForPin(){
+        if(arePhotosFromNetwork){
+            for photo in photosUrlList {
+                deletePhotoFromCoreData(photo: photo.photo)
+            }
+        } else {
+            for photo in photos {
+                deletePhotoFromCoreData(photo: photo)
+            }
+        }
+        photos = []
+        photosUrlList = []
     }
     
     private func updateMapViewLocation(){
@@ -62,7 +84,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         do {
             let photos = try managedContext.fetch(fetchRequest)
             if photos.isEmpty {
-                getPhotosFromNetwork(page: 0)
+                getPhotosFromNetwork(page: Int(pin.currentPage))
             } else {
                 self.photos = photos
                 self.collectionView.reloadData()
@@ -73,6 +95,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     }
     
     private func getPhotosFromNetwork(page: Int) {
+        imagesDownloaded = 0
+        newCollectionButton.isEnabled = false
         FlickrAPI.getListOfPhotosUrl(latitude: String(pin.latitude), longitude: String(pin.longitude),page: page, completionHandler: photosUrlResponseHandler(photoUrlList:error:))
     }
     
@@ -92,7 +116,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         collectionView.reloadData()
     }
     
-    private func saveNewPhoto(url: String, data: Data){
+    private func saveNewPhoto(url: String, data: Data, indexPath: IndexPath){
         guard let managedContext = getManagedContext() else{
             return
         }
@@ -102,6 +126,28 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         photo.image = data
         photo.pin = pin
         
+        do {
+            try managedContext.save()
+            photosUrlList[indexPath.item].photo = photo
+            newImageSaved()
+        } catch let error as NSError {
+            print(coreDataErrorMessage + error.localizedDescription)
+        }
+    }
+    
+    private func newImageSaved(){
+        imagesDownloaded = imagesDownloaded + 1
+        if(imagesDownloaded >= photosUrlList.count - 1) {
+            newCollectionButton.isEnabled = true
+        }
+    }
+    
+    private func deletePhotoFromCoreData(photo: Photo){
+        guard let managedContext = getManagedContext() else{
+            return
+        }
+        
+        managedContext.delete(photo)
         do {
             try managedContext.save()
         } catch let error as NSError {
@@ -133,16 +179,22 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "PhotoViewCell", for: indexPath) as! PhotoCollectionViewCell
         showIndicatorOnCell(cell: cell, show: true)
-        if(arePhotosFromNetwork) {            
+        
+        if(arePhotosFromNetwork && photosUrlList[indexPath.item].photo == nil ) {
             let photoUrl = photosUrlList[indexPath.item].url
             FlickrAPI.getImageDataFromUrl(imageUrl: photoUrl) { (image: UIImage, imageData: Data) in
                 cell.imageView.image = image
-                self.saveNewPhoto(url: photoUrl, data: imageData)
+                self.saveNewPhoto(url: photoUrl, data: imageData, indexPath: indexPath)
                 self.showIndicatorOnCell(cell: cell, show: false)
             }
         } else {
-            let photo = photos[indexPath.item]
-            cell.imageView.image = UIImage(data: photo.image!)
+            if(photos.isEmpty) {
+                let photo = photosUrlList[indexPath.item].photo
+                cell.imageView.image = UIImage(data: photo!.image!)
+            } else {
+                let photo = photos[indexPath.item]
+                cell.imageView.image = UIImage(data: photo.image!)
+            }
             showIndicatorOnCell(cell: cell, show: false)
         }
         
@@ -150,5 +202,18 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     }
     
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        
+        var photo: Photo
+        if(arePhotosFromNetwork){
+            photo = photosUrlList[indexPath.item].photo
+            photosUrlList.remove(at: indexPath.item)
+        } else {
+            photo = photos[indexPath.item]
+            photos.remove(at: indexPath.item)
+        }
+        deletePhotoFromCoreData(photo: photo)
+        collectionView.deleteItems(at: [indexPath])
+    }
     
 }
