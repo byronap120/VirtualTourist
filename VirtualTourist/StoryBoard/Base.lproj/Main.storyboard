@@ -99,6 +99,12 @@
                                     <outlet property="delegate" destination="kE9-Et-fDR" id="22N-8W-7Yj"/>
                                 </connections>
                             </collectionView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No images" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6Fs-gM-BK5">
+                                <rect key="frame" x="166.5" y="438" width="81.5" height="20.5"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NYb-zp-p5o">
                                 <rect key="frame" x="0.0" y="812" width="414" height="50"/>
                                 <color key="backgroundColor" systemColor="systemGray6Color" red="0.94901960780000005" green="0.94901960780000005" blue="0.96862745100000003" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -114,6 +120,7 @@
                         <color key="backgroundColor" systemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
                         <constraints>
                             <constraint firstItem="2ir-a7-rsK" firstAttribute="trailing" secondItem="Ykg-bc-PCI" secondAttribute="trailing" id="0Qk-zM-9kF"/>
+                            <constraint firstItem="6Fs-gM-BK5" firstAttribute="centerX" secondItem="3nT-GO-qRm" secondAttribute="centerX" id="5fA-B6-L6R"/>
                             <constraint firstItem="VDv-ld-EIW" firstAttribute="height" secondItem="Ykg-bc-PCI" secondAttribute="height" multiplier="1:4" id="8af-YM-4fg"/>
                             <constraint firstItem="NYb-zp-p5o" firstAttribute="bottom" secondItem="Ykg-bc-PCI" secondAttribute="bottom" id="9yV-Lp-d17"/>
                             <constraint firstItem="NYb-zp-p5o" firstAttribute="leading" secondItem="Ykg-bc-PCI" secondAttribute="leading" id="A8b-m1-5Uq"/>
@@ -122,6 +129,7 @@
                             <constraint firstItem="2ir-a7-rsK" firstAttribute="top" secondItem="VDv-ld-EIW" secondAttribute="bottom" id="Y3I-My-ujo"/>
                             <constraint firstItem="2ir-a7-rsK" firstAttribute="leading" secondItem="Ykg-bc-PCI" secondAttribute="leading" id="YWs-Qf-rj2"/>
                             <constraint firstItem="NYb-zp-p5o" firstAttribute="bottom" secondItem="Ykg-bc-PCI" secondAttribute="bottom" id="b7Q-7L-x2s"/>
+                            <constraint firstItem="6Fs-gM-BK5" firstAttribute="centerY" secondItem="3nT-GO-qRm" secondAttribute="centerY" id="ctC-J2-T1U"/>
                             <constraint firstItem="Ykg-bc-PCI" firstAttribute="trailing" secondItem="NYb-zp-p5o" secondAttribute="trailing" id="dW6-c6-Lsx"/>
                             <constraint firstItem="VDv-ld-EIW" firstAttribute="top" secondItem="Ykg-bc-PCI" secondAttribute="top" id="ens-bj-RuP"/>
                             <constraint firstItem="Ykg-bc-PCI" firstAttribute="trailing" secondItem="VDv-ld-EIW" secondAttribute="trailing" id="f0C-Qw-irY"/>
@@ -138,6 +146,7 @@
                         <outlet property="flowLayout" destination="BRn-VP-3N6" id="RMp-HC-gia"/>
                         <outlet property="mapView" destination="VDv-ld-EIW" id="ixh-bp-xU0"/>
                         <outlet property="newCollectionButton" destination="NYb-zp-p5o" id="03q-2z-z7R"/>
+                        <outlet property="noImagesLabel" destination="6Fs-gM-BK5" id="yq6-Yi-i6G"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="r33-kM-4RR" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>

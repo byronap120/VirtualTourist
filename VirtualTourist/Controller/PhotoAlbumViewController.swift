@@ -16,6 +16,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var flowLayout: UICollectionViewFlowLayout!
     @IBOutlet weak var newCollectionButton: UIButton!
+    @IBOutlet weak var noImagesLabel: UILabel!
     
     private let titleErrorMessage = "Error"
     private let coreDataErrorMessage = "Core Data error: "
@@ -35,6 +36,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(false, animated: true)
+        noImagesLabel.isHidden = true
         updateFlowLayoutDimensions(size: view.frame.size, numberOfCells: numberOfCellsPortrait)
         updateMapViewLocation()
         getLocalPhotos()
@@ -42,8 +44,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
     
     @IBAction func fetchNewCollection(_ sender: Any) {
         removePhotosForPin()
-        let newPage = pin.currentPage +  1
-        getPhotosFromNetwork(page: Int(newPage))
+         let randomPage = Int.random(in: 1..<10)
+        getPhotosFromNetwork(page: randomPage)
     }
     
     private func removePhotosForPin(){
@@ -51,13 +53,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
             for photo in photosUrlList {
                 deletePhotoFromCoreData(photo: photo.photo)
             }
+            photosUrlList = []
         } else {
             for photo in photos {
                 deletePhotoFromCoreData(photo: photo)
             }
+            photos = []
         }
-        photos = []
-        photosUrlList = []
     }
     
     private func updateMapViewLocation(){
@@ -84,7 +86,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         do {
             let photos = try managedContext.fetch(fetchRequest)
             if photos.isEmpty {
-                getPhotosFromNetwork(page: Int(pin.currentPage))
+                getPhotosFromNetwork(page: 1)
             } else {
                 self.photos = photos
                 self.collectionView.reloadData()
@@ -107,6 +109,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
         }
         
         if(photoUrlList.count == 0) {
+            noImagesLabel.isHidden = false
             showAlertMessage(title: alertMessageTitle, message: alertMessage)
             return
         }

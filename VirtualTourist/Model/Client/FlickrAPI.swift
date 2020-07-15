@@ -43,6 +43,7 @@ class FlickrAPI {
     
     class func getListOfPhotosUrl(latitude: String, longitude: String, page: Int, completionHandler: @escaping ([PhotoUrl], String?) -> Void) {
         let photosURL = Endpoints.photosSearch(latitude, longitude, String(page)).url
+        let urlTemp = photosURL.absoluteString
         let task = URLSession.shared.dataTask(with: photosURL) { (data, response, error) in
             guard let data = data else {
                 DispatchQueue.main.async {
