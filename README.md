@@ -1,6 +1,6 @@
 # VirtualTourist
 
-This app download images from Flickr and store them locally using core Data. The idea is let the user add pins on a map as if the were stops on a tour, and then download iamges for those pins.
+This app download images from Flickr and store them locally using core Data. The idea is to let the user add pins on a map as if they were stops on a tour, and then download images for those pins.
 
 ## Tecnical Overview
 
